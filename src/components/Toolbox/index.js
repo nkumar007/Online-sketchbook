@@ -1,12 +1,27 @@
+import {useDispatch, useSelector} from "react-redux";
 import styles from "./index.module.css";
-import {COLORS, MENU_ITEMS} from "../../constants";
 
-import {useSelector} from "react-redux";
+import {COLORS, MENU_ITEMS} from "../../constants";
+import {changeColor, changeBrushSize} from "@/slice/toolboxSlice";
+import cx from "classnames";
+
 const Toolbox = () => {
+  const dispatch = useDispatch();
   const activeItem = useSelector((state) => state.menu.activeMenuItem);
+  const {color, size} = useSelector((state) => state.toolbox[activeItem]);
   const showStrokeToolOption = activeItem === MENU_ITEMS.PENCIL;
   const showBrushToolOption =
     activeItem === MENU_ITEMS.PENCIL || activeItem === MENU_ITEMS.ERASER;
+
+  const updateBrushSize = (e) => {
+    dispatch(changeBrushSize({item: activeItem, size: e.target.value}));
+    // socket.emit("changeConfig", {color, size: e.target.value});
+  };
+
+  const updateColor = (newColor) => {
+    dispatch(changeColor({item: activeItem, color: newColor}));
+    // socket.emit("changeConfig", {color: newColor, size});
+  };
   return (
     <div className={styles.toolboxContainer}>
       {showStrokeToolOption && (
@@ -14,28 +29,46 @@ const Toolbox = () => {
           <h4 className={styles.toolText}>Stroke Color</h4>
           <div className={styles.itemContainer}>
             <div
-              className={styles.colorBox}
+              className={cx(styles.colorBox, {
+                [styles.active]: color === COLORS.BLACK,
+              })}
               style={{backgroundColor: COLORS.BLACK}}
+              onClick={() => updateColor(COLORS.BLACK)}
             />
             <div
-              className={styles.colorBox}
+              className={cx(styles.colorBox, {
+                [styles.active]: color === COLORS.RED,
+              })}
               style={{backgroundColor: COLORS.RED}}
+              onClick={() => updateColor(COLORS.RED)}
             />
             <div
-              className={styles.colorBox}
+              className={cx(styles.colorBox, {
+                [styles.active]: color === COLORS.GREEN,
+              })}
               style={{backgroundColor: COLORS.GREEN}}
+              onClick={() => updateColor(COLORS.GREEN)}
             />
             <div
-              className={styles.colorBox}
+              className={cx(styles.colorBox, {
+                [styles.active]: color === COLORS.BLUE,
+              })}
               style={{backgroundColor: COLORS.BLUE}}
+              onClick={() => updateColor(COLORS.BLUE)}
             />
             <div
-              className={styles.colorBox}
+              className={cx(styles.colorBox, {
+                [styles.active]: color === COLORS.ORANGE,
+              })}
               style={{backgroundColor: COLORS.ORANGE}}
+              onClick={() => updateColor(COLORS.ORANGE)}
             />
             <div
-              className={styles.colorBox}
+              className={cx(styles.colorBox, {
+                [styles.active]: color === COLORS.YELLOW,
+              })}
               style={{backgroundColor: COLORS.YELLOW}}
+              onClick={() => updateColor(COLORS.YELLOW)}
             />
           </div>
         </div>
@@ -45,7 +78,14 @@ const Toolbox = () => {
         <div className={styles.toolItem}>
           <h4 className={styles.toolText}>Brush Size</h4>
           <div className={styles.itemContainer}>
-            <input type="range" min={1} max={10} step={1} />
+            <input
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              onChange={updateBrushSize}
+              value={size}
+            />
           </div>
         </div>
       )}
